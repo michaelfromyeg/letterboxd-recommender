@@ -1,0 +1,10 @@
+Letterboxd
+%sveltekit
+head%
+data-sveltekit-preload-data
+charset
+body%
+assets%
+lang
+doctype
+href
