@@ -143,7 +143,7 @@
 
 		{#if error}
 			<div class="max-w-md mx-auto bg-[#1c2228] p-6 sm:p-8 rounded-lg shadow-lg text-center">
-				<p class="text-red-500 mb-4">{error}</p>
+				<p class="text-red-500 mb-4">{error}.</p>
 				<button on:click={resetForm} class="btn-secondary" style="--accent-color: {accentColor};"
 					>Try Again</button
 				>
@@ -152,11 +152,12 @@
 
 		{#if recommendations.length}
 			<div
-				class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mt-8 sm:mt-12"
+				class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6 mt-8 sm:mt-12"
 			>
 				{#each recommendations as movie}
 					<div class="movie-card group">
-						<img src={movie.poster} alt={movie.title} class="w-full h-auto rounded-t-lg" />
+						<!-- TODO(michaelfromyeg): implement movie posters -->
+						<!-- <img src={movie.poster} alt={movie.title} class="w-full h-auto rounded-t-lg" /> -->
 						<div class="p-4 bg-[#1c2228] rounded-b-lg">
 							<h3
 								class="text-base sm:text-lg font-semibold mb-2 group-hover:text-[var(--accent-color)] transition-colors"

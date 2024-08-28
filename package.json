@@ -2,6 +2,7 @@
 	"name": "letterboxd-recommender",
 	"version": "0.0.1",
 	"private": true,
+	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
@@ -31,5 +32,8 @@
 		"typescript-eslint": "^8.0.0",
 		"vite": "^5.0.3"
 	},
-	"type": "module"
+	"dependencies": {
+		"cheerio": "^1.0.0",
+		"node-fetch": "^3.3.2"
+	}
 }

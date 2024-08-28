@@ -1,5 +1,9 @@
 {
 	"editor.formatOnSave": true,
+	"editor.codeActionsOnSave": {
+		"source.fixAll": "explicit",
+		"source.fixAll.eslint": "explicit"
+	},
 	"[svelte]": {
 		"editor.defaultFormatter": "svelte.svelte-vscode"
 	}
