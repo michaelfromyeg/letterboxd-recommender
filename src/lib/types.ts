@@ -1,12 +1,7 @@
-export interface RecommendedMovie {
-	title: string;
-	// poster: string;
-	reason: string;
-}
-
-export interface WatchedMovie {
-	title: string;
-	rating: number;
+export interface RecommendedFilm {
+	name: string;
 	year: string;
-	movieUrl: string;
+	tmdbPosterUrl?: string;
+
+	reason: string;
 }

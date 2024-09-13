@@ -2,13 +2,27 @@
 	import { onMount } from 'svelte';
 	import letterboxdLogo from '../assets/letterboxd.svg';
 
+	// types
+	interface Movie {
+		name: string;
+		year: string;
+		reason: string;
+
+		tmdbPosterUrl?: string;
+	}
+
+	// form inputs
 	let username = '';
 	let genre = '';
+	let sourceType = 'Diary';
+
+	// page content
 	let recommendations: Movie[] = [];
 	let loading = false;
 	let error: string | null = null;
 	let accentColor: string;
 
+	// static data
 	const genres: string[] = [
 		'Action',
 		'Adventure',
@@ -29,14 +43,7 @@
 		'War',
 		'Western'
 	];
-
 	const accentColors = ['#00E054', '#40BCF4', '#FF8000'];
-
-	interface Movie {
-		title: string;
-		poster: string;
-		reason: string;
-	}
 
 	async function getRecommendations(): Promise<void> {
 		loading = true;
@@ -44,7 +51,7 @@
 
 		try {
 			const response = await fetch(
-				`/api/recommend?username=${encodeURIComponent(username)}&genres=${encodeURIComponent(genre)}`
+				`/api/recommend?username=${encodeURIComponent(username)}&genre=${encodeURIComponent(genre)}&source=${encodeURIComponent(sourceType)}`
 			);
 			if (!response.ok) {
 				throw new Error('Failed to fetch recommendations.');
@@ -80,9 +87,9 @@
 </svelte:head>
 
 <main
-	class="min-h-screen bg-[#14181c] text-white font-inter flex justify-center items-start pt-8 sm:pt-16"
+	class="min-h-screen bg-[#14181c] text-white font-inter flex justify-center items-start pt-0 sm:pt-0"
 >
-	<div class="w-full max-w-4xl px-4 py-6 sm:py-12">
+	<div class="w-full max-w-4xl px-4 py-4 sm:py-12">
 		<div class="flex flex-col items-center mb-8">
 			<img
 				src={letterboxdLogo}
@@ -100,7 +107,7 @@
 		{#if !recommendations.length && !loading && !error}
 			<div class="w-full bg-[#1c2228] p-4 sm:p-8 rounded-lg shadow-lg">
 				<form on:submit|preventDefault={getRecommendations} class="space-y-6 sm:space-y-8">
-					<p
+					<div
 						class="text-lg sm:text-xl text-gray-300 leading-relaxed flex flex-col items-center space-y-4"
 					>
 						<span class="text-center">I want movie recommendations for</span>
@@ -109,9 +116,32 @@
 							bind:value={username}
 							class="inline-input w-full max-w-xs"
 							required
-							placeholder="your Letterboxd username"
+							placeholder="(some Letterboxd username)"
 							style="--accent-color: {accentColor};"
 						/>
+						<span class="text-center">based on their</span>
+						<div class="flex flex-row justify-center items-center space-x-6">
+							<label class="flex items-center space-x-2">
+								<input
+									type="radio"
+									bind:group={sourceType}
+									value="Diary"
+									class="custom-radio"
+									style="--accent-color: {accentColor};"
+								/>
+								<span>Diary</span>
+							</label>
+							<label class="flex items-center space-x-2">
+								<input
+									type="radio"
+									bind:group={sourceType}
+									value="Reviews"
+									class="custom-radio"
+									style="--accent-color: {accentColor};"
+								/>
+								<span>Reviews</span>
+							</label>
+						</div>
 						<span class="text-center">in the genre of</span>
 						<select
 							bind:value={genre}
@@ -123,7 +153,7 @@
 								<option value={genreOption}>{genreOption}</option>
 							{/each}
 						</select>
-					</p>
+					</div>
 					<div class="flex justify-center">
 						<button
 							type="submit"
@@ -143,7 +173,7 @@
 
 		{#if error}
 			<div class="max-w-md mx-auto bg-[#1c2228] p-6 sm:p-8 rounded-lg shadow-lg text-center">
-				<p class="text-red-500 mb-4">{error}.</p>
+				<p class="text-red-500 mb-4">{error}</p>
 				<button on:click={resetForm} class="btn-secondary" style="--accent-color: {accentColor};"
 					>Try Again</button
 				>
@@ -157,12 +187,12 @@
 				{#each recommendations as movie}
 					<div class="movie-card group">
 						<!-- TODO(michaelfromyeg): implement movie posters -->
-						<!-- <img src={movie.poster} alt={movie.title} class="w-full h-auto rounded-t-lg" /> -->
+						<img src={movie.tmdbPosterUrl} alt={movie.name} class="w-full h-auto rounded-t-lg" />
 						<div class="p-4 bg-[#1c2228] rounded-b-lg">
 							<h3
 								class="text-base sm:text-lg font-semibold mb-2 group-hover:text-[var(--accent-color)] transition-colors"
 							>
-								{movie.title}
+								{movie.name} ({movie.year})
 							</h3>
 							<p class="text-xs sm:text-sm text-gray-400">{movie.reason}</p>
 						</div>
@@ -214,7 +244,7 @@
 	.btn-primary {
 		@apply px-4 sm:px-6 py-2 sm:py-3 rounded-md font-semibold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#14181c] transition duration-300 ease-in-out;
 		background-color: var(--accent-color);
-		color: #14181c;
+		color: #1c2228;
 	}
 
 	.btn-primary:hover {
@@ -232,5 +262,42 @@
 	.loader {
 		@apply border-4 border-gray-700 rounded-full w-10 h-10 sm:w-12 sm:h-12 animate-spin;
 		border-top-color: var(--accent-color);
+	}
+
+	.custom-radio {
+		appearance: none;
+		background-color: transparent;
+		margin: 0;
+		font: inherit;
+		color: var(--accent-color);
+		width: 1.25em;
+		height: 1.25em;
+		border: 2px solid #4a5568;
+		border-radius: 50%;
+		display: grid;
+		place-content: center;
+		cursor: pointer;
+		transition:
+			background-color 0.2s ease,
+			border-color 0.2s ease;
+	}
+
+	.custom-radio::before {
+		content: '';
+		width: 0.65em;
+		height: 0.65em;
+		border-radius: 50%;
+		transform: scale(0);
+		transition: 120ms transform ease-in-out;
+		background-color: var(--accent-color);
+	}
+
+	.custom-radio:checked::before {
+		transform: scale(1);
+	}
+
+	.custom-radio:focus {
+		outline: none;
+		box-shadow: 0 0 0 2px var(--accent-color);
 	}
 </style>

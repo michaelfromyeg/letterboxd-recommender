@@ -1,15 +1,12 @@
-import type { WatchedMovie } from './types';
+export function arrayToCSV<T extends Record<string, unknown>>(data: T[]): string {
+	if (!data.length) return '';
 
-export function convertMoviesToCSV(movies: WatchedMovie[]): string {
-	const headers = ['Title', 'Rating', 'Year']; // 'MovieURL'
+	const headers = Object.keys(data[0]);
 
-	const csvContent = [
-		headers.join(','),
-		...movies.map(
-			(movie) =>
-				`"${movie.title.replace(/"/g, '""')}",${movie.rating},"${movie.year}"` // ,"${movie.movieUrl}"
-		)
-	].join('\n');
-
-	return csvContent;
+	const csvRows = data.map((obj: Record<string, unknown>) =>
+		headers
+			.map((header) => JSON.stringify(obj[header], (key, value) => (value === null ? '' : value)))
+			.join(',')
+	);
+	return [headers.join(','), ...csvRows].join('\n');
 }
