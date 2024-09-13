@@ -4,7 +4,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"postinstall": "puppeteer install",
+		"postinstall": "npx puppeteer install",
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
@@ -38,6 +38,7 @@
 	"dependencies": {
 		"betterboxd": "^1.3.0",
 		"cheerio": "^1.0.0",
-		"node-fetch": "^3.3.2"
+		"node-fetch": "^3.3.2",
+		"puppeteer": "^23.3.0"
 	}
 }
