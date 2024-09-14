@@ -2,7 +2,7 @@ export OPEN_API_KEY := $(shell jq -r '.RecommendFunction.OpenApiKey' env.json)
 export TMDB_API_KEY := $(shell jq -r '.RecommendFunction.TmdbApiKey' env.json)
 
 start:
-	sam local start-lambda
+	sam local start-api --env-vars env.json
 
 build:
 	cd functions/recommendFunction && npm install && npm run build && cd ../.. 

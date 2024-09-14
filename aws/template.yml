@@ -35,9 +35,20 @@ Resources:
       Layers:
         - !Ref ChromiumLayer
       # Adjust as necessary
-      Timeout: 120
+      Timeout: 29
       MemorySize: 1024
       Environment:
         Variables:
           OpenApiKey: !Ref OpenApiKey
           TmdbApiKey: !Ref TmdbApiKey
+      Events:
+        ApiGatewayEvent:
+          Type: Api
+          Properties:
+            Path: /recommend
+            Method: GET
+
+Outputs:
+  ApiUrl:
+    Description: "API Gateway endpoint URL"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/recommend"

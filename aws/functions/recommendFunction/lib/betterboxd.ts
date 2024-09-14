@@ -11,7 +11,7 @@ import {
 
 export async function fetchLetterboxdFilms(
   username: string,
-  maxPages: number = 5,
+  maxPages: number = 1,
 ): Promise<{ films: Film[]; totalPages: number; fetchedPages: number }> {
   return await fetchLetterboxdData(
     username,
@@ -59,7 +59,7 @@ export async function fetchLetterboxdFilmsByPage(
 
 export async function fetchLetterboxdDiary(
   username: string,
-  maxPages: number = 5,
+  maxPages: number = 1,
 ): Promise<{ films: Film[]; totalPages: number; fetchedPages: number }> {
   return await fetchLetterboxdData(
     username,
@@ -139,7 +139,7 @@ export async function fetchLetterboxdDiaryEntriesByPage(
 
 export async function fetchLetterboxdReviews(
   username: string,
-  maxPages: number = 5,
+  maxPages: number = 1,
 ): Promise<{ films: Film[]; totalPages: number; fetchedPages: number }> {
   return await fetchLetterboxdData(
     username,
@@ -244,7 +244,7 @@ async function fetchLetterboxdData(
     username: string,
     page: number,
   ) => Promise<{ films: Film[]; totalPages: number }>,
-  maxPages: number = 5,
+  maxPages: number = 1,
 ): Promise<{ films: Film[]; totalPages: number; fetchedPages: number }> {
   const { films: firstFilms, totalPages } = await pageFetcher(username, 1);
 
