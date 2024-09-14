@@ -1,0 +1,24 @@
+{
+  "name": "RecommendFunction",
+  "private": true,
+  "version": "0.1.0",
+  "description": "AWS Lambda Function that loads Chromium. Refer to https://github.com/Sparticuz/chromium#install for compatible versions.",
+  "main": "app.mjs",
+  "type": "module",
+  "scripts": {
+    "build": "rm -rf dist && tsc"
+  },
+  "devDependencies": {
+    "@sparticuz/chromium": "^119.0.0",
+    "@types/aws-lambda": "^8.10.145",
+    "aws-lambda": "^1.0.7",
+    "typescript": "^5.6.2"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0",
+    "dotenv": "^16.4.5",
+    "lru-cache-fs": "^2.0.1",
+    "node-fetch": "^3.3.2",
+    "puppeteer-core": "^21.5.1"
+  }
+}

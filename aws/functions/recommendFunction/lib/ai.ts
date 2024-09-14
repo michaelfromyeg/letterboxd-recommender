@@ -1,13 +1,13 @@
 import fetch from 'node-fetch';
-import type { RecommendedFilm } from './types';
-import { arrayToCSV } from './csv';
-import type { Film } from 'betterboxd/dist/src/types';
+
+import { arrayToCSV } from './csv.js';
+import { RecommendedFilm, Film } from './types.js';
 
 export async function getChatGPTRecommendations(
 	seenFilms: Film[],
 	reviewedFilms: Film[],
   alreadySeen: RecommendedFilm[],
-	genre: string | null,
+	genre: string | undefined,
 	retries: number = 3
 ): Promise<RecommendedFilm[]> {
 	if (retries <= 0) {

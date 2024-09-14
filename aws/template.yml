@@ -1,0 +1,37 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Configuration for the recommend lambda.
+
+Resources:
+  ChromiumLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      Description: Chromium with Node.js integration for AWS Lambda
+      ContentUri: layers/chromium
+      CompatibleRuntimes:
+        - &nodejsRuntime nodejs18.x
+      # Chromium doesn't currently have ARM support; see https://github.com/Sparticuz/chromium#can-i-use-arm-or-graviton-instances
+      CompatibleArchitectures:
+        - &chromiumArch x86_64
+      RetentionPolicy: Delete
+    Metadata:
+      BuildMethod: *nodejsRuntime
+      BuildArchitecture: *chromiumArch
+
+  RecommendFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/recommendFunction
+      Handler: dist/app.lambdaHandler
+      Runtime: *nodejsRuntime
+      Architectures:
+        - *chromiumArch
+      Layers:
+        - !Ref ChromiumLayer
+      # Adjust as necessary
+      Timeout: 60
+      MemorySize: 1024
+      Environment:
+        Variables:
+          OPEN_API_KEY:
+          TMDB_API_KEY:

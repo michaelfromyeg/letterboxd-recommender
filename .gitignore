@@ -1,3 +1,13 @@
+### Custom
+
+dist/
+.aws-sam/
+env.json
+
+### Lambda.gitignore
+
+function.zip
+
 ### Svelte.gitignore
 
 node_modules
@@ -5,8 +15,8 @@ node_modules
 # Output
 .output
 .vercel
-/.svelte-kit
-/build
+.svelte-kit/
+build/
 
 # OS
 .DS_Store
