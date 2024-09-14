@@ -267,8 +267,8 @@
 
 	.movie-card:hover {
 		box-shadow:
-			0 0 10px rgba(0, 224, 84, 0.4),
-			0 0 20px rgba(0, 224, 84, 0.3);
+			0 0 2px var(--accent-color),
+			0 0 4px var(--accent-color);
 	}
 
 	.loader {

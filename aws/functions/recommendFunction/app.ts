@@ -13,6 +13,11 @@ export const lambdaHandler = async (
 
   if (!username) {
     return {
+      headers: {
+        "Access-Control-Allow-Headers" : "Content-Type",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET"
+      },
       statusCode: 400,
       body: JSON.stringify({ message: 'Missing username parameter' }),
     };
@@ -20,6 +25,11 @@ export const lambdaHandler = async (
 
   if (!source || !['Diary', 'Reviews'].includes(source)) {
     return {
+      headers: {
+        "Access-Control-Allow-Headers" : "Content-Type",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET"
+      },
       statusCode: 400,
       body: JSON.stringify({ message: 'Missing source parameter or invalid source' }),
     };
@@ -48,15 +58,23 @@ export const lambdaHandler = async (
 
     console.log('Returning recommendations', recommendedFilms);
     return {
-      statusCode: 200,
-      body: JSON.stringify(recommendedFilms),
       headers: {
+        "Access-Control-Allow-Headers" : "Content-Type",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET",
         'Content-Type': 'application/json',
       },
+      statusCode: 200,
+      body: JSON.stringify(recommendedFilms),
     };
   } catch (error) {
     console.error('Error occurred while processing the request:', error);
     return {
+      headers: {
+        "Access-Control-Allow-Headers" : "Content-Type",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET",
+      },
       statusCode: 500,
       body: JSON.stringify({ message: 'Internal Server Error', error: (error as any).message }),
     };

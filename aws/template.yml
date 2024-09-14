@@ -2,6 +2,14 @@ AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: Configuration for the recommend lambda.
 
+Globals:
+  Api:
+    Cors:
+      AllowMethods: "'GET,POST,OPTIONS'"
+      AllowHeaders: "'content-type'"
+      AllowOrigin: "'*'"
+      # AllowCredentials: true
+
 Parameters:
   OpenApiKey:
     Type: String
@@ -34,7 +42,6 @@ Resources:
         - *chromiumArch
       Layers:
         - !Ref ChromiumLayer
-      # Adjust as necessary
       Timeout: 29
       MemorySize: 1024
       Environment:
@@ -42,11 +49,16 @@ Resources:
           OpenApiKey: !Ref OpenApiKey
           TmdbApiKey: !Ref TmdbApiKey
       Events:
-        ApiGatewayEvent:
+        ApiGatewayEventGet:
           Type: Api
           Properties:
             Path: /recommend
             Method: GET
+        ApiGatewayEventOptions:
+          Type: Api
+          Properties:
+            Path: /recommend
+            Method: OPTIONS
 
 Outputs:
   ApiUrl:
