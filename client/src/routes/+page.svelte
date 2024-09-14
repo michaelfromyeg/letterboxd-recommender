@@ -45,13 +45,20 @@
 	];
 	const accentColors = ['#00E054', '#40BCF4', '#FF8000'];
 
+	let apiBaseUrl: string;
+	if (import.meta.env.MODE === 'development') {
+		apiBaseUrl = 'http://localhost:3000';
+	} else {
+		apiBaseUrl = 'https://v2ibpvirn2.execute-api.us-west-2.amazonaws.com/Prod';
+	}
+
 	async function getRecommendations(): Promise<void> {
 		loading = true;
 		error = null;
 
 		try {
 			const response = await fetch(
-				`/api/recommend?username=${encodeURIComponent(username)}&genre=${encodeURIComponent(genre)}&source=${encodeURIComponent(sourceType)}`
+				`${apiBaseUrl}/recommend?username=${encodeURIComponent(username)}&genre=${encodeURIComponent(genre)}&source=${encodeURIComponent(sourceType)}`
 			);
 			if (!response.ok) {
 				throw new Error('Failed to fetch recommendations.');
@@ -185,8 +192,7 @@
 				class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6 mt-8 sm:mt-12"
 			>
 				{#each recommendations as movie}
-					<div class="movie-card group">
-						<!-- TODO(michaelfromyeg): implement movie posters -->
+					<div class="movie-card group" style="--accent-color: {accentColor};">
 						<img src={movie.tmdbPosterUrl} alt={movie.name} class="w-full h-auto rounded-t-lg" />
 						<div class="p-4 bg-[#1c2228] rounded-b-lg">
 							<h3
@@ -257,6 +263,12 @@
 
 	.movie-card {
 		@apply bg-[#1c2228] rounded-lg overflow-hidden shadow-lg transform hover:-translate-y-1 transition duration-300 ease-in-out;
+	}
+
+	.movie-card:hover {
+		box-shadow:
+			0 0 10px rgba(0, 224, 84, 0.4),
+			0 0 20px rgba(0, 224, 84, 0.3);
 	}
 
 	.loader {
