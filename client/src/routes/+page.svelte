@@ -9,6 +9,7 @@
 		reason: string;
 
 		tmdbPosterUrl?: string;
+		slug?: string;
 	}
 
 	// form inputs
@@ -193,24 +194,44 @@
 			>
 				{#each recommendations as movie}
 					<div class="movie-card group" style="--accent-color: {accentColor};">
-						<img src={movie.tmdbPosterUrl} alt={movie.name} class="w-full h-auto rounded-t-lg" />
+						<a href={`https://letterboxd.com/film/${movie.slug}/`} target="_blank">
+							<img src={movie.tmdbPosterUrl} alt={movie.name} class="w-full h-auto rounded-t-lg" />
+						</a>
 						<div class="p-4 bg-[#1c2228] rounded-b-lg">
 							<h3
 								class="text-base sm:text-lg font-semibold mb-2 group-hover:text-[var(--accent-color)] transition-colors"
 							>
-								{movie.name} ({movie.year})
+								<a href={`https://letterboxd.com/film/${movie.slug}/`} target="_blank">
+									{movie.name} ({movie.year})
+								</a>
 							</h3>
 							<p class="text-xs sm:text-sm text-gray-400">{movie.reason}</p>
 						</div>
 					</div>
 				{/each}
 			</div>
+
 			<div class="text-center mt-8 sm:mt-12">
 				<button on:click={resetForm} class="btn-primary" style="--accent-color: {accentColor};"
 					>Go again</button
 				>
 			</div>
 		{/if}
+
+		<footer class="text-white text-center py-6 mt-8 sm:mt-12">
+			<div class="container mx-auto">
+				<p class="text-sm sm:text-base">
+					Made with ☕ by <a
+						href="https://github.com/michaelfromyeg"
+						target="_blank"
+						class="underline hover:text-[var(--accent-color)] transition-colors">Michael DeMarco</a
+					>
+				</p>
+				<p class="text-xs sm:text-sm mt-2">
+					© {new Date().getFullYear()} Letterboxd Recommender. All rights reserved.
+				</p>
+			</div>
+		</footer>
 	</div>
 </main>
 
@@ -311,5 +332,12 @@
 	.custom-radio:focus {
 		outline: none;
 		box-shadow: 0 0 0 2px var(--accent-color);
+	}
+
+	footer a {
+		@apply text-white;
+	}
+	footer a:hover {
+		filter: brightness(90%);
 	}
 </style>

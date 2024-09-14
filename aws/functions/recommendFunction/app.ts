@@ -2,7 +2,7 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 
 import type { RecommendedFilm } from "./lib/types";
 import { getChatGPTRecommendations } from "./lib/ai.js";
-import { addTmdbPosterUrls, fetchLetterboxdDiary, fetchLetterboxdFilms, fetchLetterboxdReviews } from "./lib/betterboxd.js";
+import { addLetterboxdSlug, addTmdbPosterUrls, fetchLetterboxdDiary, fetchLetterboxdFilms, fetchLetterboxdReviews } from "./lib/betterboxd.js";
 // import { RECOMMENDATIONS } from "./mock.js";
 
 export const lambdaHandler = async (
@@ -55,6 +55,7 @@ export const lambdaHandler = async (
     );
 
     await addTmdbPosterUrls(recommendedFilms);
+    await addLetterboxdSlug(recommendedFilms);
 
     console.log('Returning recommendations', recommendedFilms);
     return {

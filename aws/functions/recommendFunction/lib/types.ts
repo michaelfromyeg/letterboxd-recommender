@@ -13,12 +13,14 @@ export interface Film {
   likesCount?: number;
 
   tmdbPosterUrl?: string;
+  slug?: string;
 }
 
 export interface RecommendedFilm {
 	name: string;
 	year: string;
 	tmdbPosterUrl?: string;
+  slug?: string;
 
 	reason: string;
 }
