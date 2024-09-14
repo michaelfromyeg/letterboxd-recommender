@@ -1,6 +1,4 @@
 import * as cheerio from "cheerio";
-import dotenv from "dotenv";
-import LRU from "lru-cache-fs";
 import fetch from "node-fetch";
 
 import { Film } from "./types.js";
@@ -10,15 +8,6 @@ import {
   parseDateString,
   sleep,
 } from "./utils.js";
-
-dotenv.config();
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const cache = new LRU<string, any>({
-  max: 100,
-  ttl: 24 * 1000 * 60 * 60,
-  cacheName: "cache.json",
-});
 
 export async function fetchLetterboxdFilms(
   username: string,
@@ -246,6 +235,8 @@ export async function fetchLetterboxdReviewsByPage(
 
 /**
  * Private helper function to get paginated Letterboxd data.
+ * 
+ * TODO(michaelfromyeg): implement caching around this function based on pageFetcher.name, username
  */
 async function fetchLetterboxdData(
   username: string,
@@ -255,14 +246,6 @@ async function fetchLetterboxdData(
   ) => Promise<{ films: Film[]; totalPages: number }>,
   maxPages: number = 5,
 ): Promise<{ films: Film[]; totalPages: number; fetchedPages: number }> {
-  const cacheKey = `${pageFetcher.name}:${username}:${maxPages}`;
-
-  const cachedData = cache.get(cacheKey);
-  if (cachedData) {
-    console.log("Using cached data...");
-    return cachedData;
-  }
-
   const { films: firstFilms, totalPages } = await pageFetcher(username, 1);
 
   let films = [...firstFilms];
@@ -274,11 +257,10 @@ async function fetchLetterboxdData(
     );
     films = [...films, ...fetchedFilms];
     fetchedPages++;
-    await sleep(50);
+    await sleep(0);
   }
 
   const result = { films, totalPages, fetchedPages };
-  cache.set(cacheKey, result);
 
   return result;
 }
@@ -312,7 +294,7 @@ export async function addTmdbPosterUrls(
   films: Array<Pick<Film, "name" | "year" | "tmdbPosterUrl">>,
   apiKey?: string,
 ): Promise<void> {
-  const TMDB_API_KEY = process.env.TMDB_API_KEY || apiKey;
+  const TMDB_API_KEY = process.env.TmdbApiKey || apiKey;
 
   if (!TMDB_API_KEY) {
     throw new Error("TMDB_API_KEY is not set in the environment variables.");

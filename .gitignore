@@ -1,11 +1,13 @@
 ### Custom
 
 dist/
-.aws-sam/
-env.json
 
 ### Lambda.gitignore
 
+.aws-sam/
+aws/deploy.sh
+aws/samconfig.toml
+env.json
 function.zip
 
 ### Svelte.gitignore

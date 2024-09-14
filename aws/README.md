@@ -1,19 +1,32 @@
-# Chromium as a Layer for AWS SAM
+# AWS
 
-1. Install AWS SAM CLI: https://github.com/aws/aws-sam-cli/
+Helpful links and pointers for the AWS resources this project is using.
 
-1. Ensure Docker is installed and running: https://www.docker.com/
+## Usage
 
-1. Build the project:
+0. Populate `env.json` with your `OPEN_API_KEY` and `TMDB_API_KEY`
+1. Install [AWS SAM CLI](https://github.com/aws/aws-sam-cli/), e.g., `brew install aws-sam-cli`
+2. Ensure [Docker](https://docker.com) is installed and running
+3. Build the project:
 
-   ```sh
-   sam build
-   ```
+    ```sh
+    sam build
+    ```
 
-1. Invoke the AWS Lambda Function locally with:
+4. Invoke the AWS Lambda Function locally with:
 
-   ```sh
-   sam local invoke ExampleFunction
-   ```
+    ```sh
+    sam local invoke --event event.json --env-vars env.json
+    ```
 
-   This example connects to https://www.example.com and outputs the page's title as the function result. See the source code in [`app.mjs`](functions/exampleFunction/app.mjs) for more details.
+5. For usage with the front-end, run:
+
+    ```sh
+    sam local start-lambda
+    ```
+
+These commands are made more accessible via the provided `Makefile`.
+
+## Notes
+
+Imports to source code within the TypeScript project need to have the `.js` file extension. I know, it sucks.

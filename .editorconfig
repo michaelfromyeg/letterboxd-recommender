@@ -19,3 +19,6 @@ indent_size = 2
 
 [*.{md,css,scss,html}]
 indent_size = 2
+
+[Makefile]
+indent_style = tab

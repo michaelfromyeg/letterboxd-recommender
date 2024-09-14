@@ -6,5 +6,9 @@
   },
   "[svelte]": {
     "editor.defaultFormatter": "svelte.svelte-vscode"
-  }
+  },
+  "yaml.schemas": {
+    "https://json.schemastore.org/aws-sam": "aws/template.yml"
+  },
+  "yaml.validate": false
 }

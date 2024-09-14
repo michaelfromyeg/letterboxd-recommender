@@ -14,7 +14,7 @@ export async function getChatGPTRecommendations(
 		throw new Error('Failed to get ChatGPT recommendations after retries');
 	}
 
-	const apiKey = process.env.OPEN_API_KEY as string;
+	const apiKey = process.env.OpenApiKey as string;
 
 	if (reviewedFilms.length > 100) {
 		// shuffle the array and take the first 100, to give a reasonable sample

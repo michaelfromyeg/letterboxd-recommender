@@ -1,5 +1,6 @@
 #!/bin/bash
 
+brew install jq
 brew install awscli
 brew install aws-sam-cli
 

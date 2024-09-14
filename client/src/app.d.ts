@@ -12,8 +12,4 @@ declare global {
 	}
 }
 
-interface ImportMetaEnv {
-	OPEN_API_KEY: string;
-}
-
 export {};

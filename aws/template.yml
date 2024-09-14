@@ -2,6 +2,12 @@ AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: Configuration for the recommend lambda.
 
+Parameters:
+  OpenApiKey:
+    Type: String
+  TmdbApiKey:
+    Type: String
+
 Resources:
   ChromiumLayer:
     Type: AWS::Serverless::LayerVersion
@@ -29,9 +35,9 @@ Resources:
       Layers:
         - !Ref ChromiumLayer
       # Adjust as necessary
-      Timeout: 60
+      Timeout: 120
       MemorySize: 1024
       Environment:
         Variables:
-          OPEN_API_KEY:
-          TMDB_API_KEY:
+          OpenApiKey: !Ref OpenApiKey
+          TmdbApiKey: !Ref TmdbApiKey

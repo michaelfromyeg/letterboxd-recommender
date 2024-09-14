@@ -1,6 +1,6 @@
-import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 
-import type { Film, RecommendedFilm } from "./lib/types";
+import type { RecommendedFilm } from "./lib/types";
 import { getChatGPTRecommendations } from "./lib/ai.js";
 import { addTmdbPosterUrls, fetchLetterboxdDiary, fetchLetterboxdFilms, fetchLetterboxdReviews } from "./lib/betterboxd.js";
 // import { RECOMMENDATIONS } from "./mock.js";
@@ -26,21 +26,17 @@ export const lambdaHandler = async (
   }
 
   try {
-    console.log("Fetching all user's seen films from Letterboxd");
-    const { films: seenFilms } = await fetchLetterboxdFilms(username);
+    console.log("Fetching all user's seen films and reviewed films in parallel from Letterboxd");
 
-    console.log(`Successfully got seen films; now getting reviewed films from ${source}`);
-    let reviewedFilms: Film[] = [];
-
-    if (source === 'Diary') {
-      const diary = await fetchLetterboxdDiary(username);
-      reviewedFilms = diary.films;
-    } else if (source === 'Reviews') {
-      const reviews = await fetchLetterboxdReviews(username);
-      reviewedFilms = reviews.films;
-    }
-
-    console.log('Successfully got reviewed films; now getting recommendations');
+    const [seenFilmsResult, reviewedFilmsResult] = await Promise.all([
+      fetchLetterboxdFilms(username),
+      source === 'Diary' ? fetchLetterboxdDiary(username) : fetchLetterboxdReviews(username)
+    ]);
+    
+    const seenFilms = seenFilmsResult.films;
+    const reviewedFilms = reviewedFilmsResult.films;
+    
+    console.log("Successfully fetched both seen and reviewed films");
     const recommendedFilms: RecommendedFilm[] = await getChatGPTRecommendations(
       seenFilms,
       reviewedFilms,

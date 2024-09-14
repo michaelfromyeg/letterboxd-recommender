@@ -1,18 +1,19 @@
 import chromium from '@sparticuz/chromium';
 import puppeteer from 'puppeteer-core';
 
+const settings = {
+  args: chromium.args,
+  defaultViewport: chromium.defaultViewport,
+  executablePath: await chromium.executablePath(),
+  headless: chromium.headless,
+}
+
+const browser = await puppeteer.launch(settings);
+
 export async function getHtmlContent(
   url: string,
   target?: string,
 ): Promise<string> {
-  const settings = {
-    args: chromium.args,
-    defaultViewport: chromium.defaultViewport,
-    executablePath: await chromium.executablePath(),
-    headless: chromium.headless,
-  }
-  
-  const browser = await puppeteer.launch(settings);
   const page = await browser.newPage();
 
   try {
@@ -32,12 +33,9 @@ export async function getHtmlContent(
     console.error(`Error fetching HTML content: ${error}`);
     throw error;
   } finally {
-    if (browser) {
-      await browser.close();
+    if (page) {
+      await page.close();
     }
-    // if (page) {
-    //   await page.close();
-    // }
   }
 }
 
