@@ -26,7 +26,7 @@ export async function getChatGPTRecommendations(
   const sanitizedFilms: Array<Record<string, unknown>> = [...reviewedFilms]
     .map((film) => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { id, posterUrl, tmdbPosterUrl, likesCount, ...rest } = film;
+      const { id, slug, posterUrl, tmdbPosterUrl, likesCount, ...rest } = film;
       return rest;
     })
     .map((film) => {

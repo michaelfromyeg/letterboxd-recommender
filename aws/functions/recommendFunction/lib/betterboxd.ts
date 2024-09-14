@@ -34,6 +34,7 @@ export async function fetchLetterboxdFilmsByPage(
       const id = String(poster.attr("data-film-id"));
       const name = String(poster.attr("data-film-name"));
       const year = String(poster.attr("data-film-release-year"));
+      const slug = String(poster.attr("data-film-slug"));
       const posterUrl = String(poster.find("div img").attr("src"));
 
       const ratingString = $(elem).find("span.rating").text().trim() || "";
@@ -47,6 +48,7 @@ export async function fetchLetterboxdFilmsByPage(
         id,
         name,
         year,
+        slug,
         posterUrl,
         rating,
       });
@@ -105,13 +107,15 @@ export async function fetchLetterboxdDiaryEntriesByPage(
 
       const filmTd = row.find("td.td-film-details");
       const filmNameH3 = filmTd.find("h3.headline-3 a");
-      const filmName = filmNameH3.text().trim();
+      const name = filmNameH3.text().trim();
 
       const filmYearTd = row.find("td.td-released");
-      const filmYear = filmYearTd.text().trim();
+      const year = filmYearTd.text().trim();
 
       const filmPosterDiv = filmTd.find("div.react-component.poster");
-      const filmId = filmPosterDiv.attr("data-film-id");
+      const id = filmPosterDiv.attr("data-film-id");
+
+      const slug = String(filmPosterDiv.attr("data-film-slug"));
 
       const imgElement = filmPosterDiv.find("div img");
       const posterUrl = imgElement.attr("src") || "";
@@ -123,9 +127,10 @@ export async function fetchLetterboxdDiaryEntriesByPage(
         : undefined;
 
       films.push({
-        id: filmId || "",
-        name: filmName,
-        year: filmYear,
+        id: id || "",
+        name,
+        year,
+        slug,
         datetime: dateObj,
         rating,
         posterUrl,
@@ -163,6 +168,7 @@ export async function fetchLetterboxdReviewsByPage(
       const id = String(posterDiv.attr("data-film-id"));
       const name = String(posterDiv.attr("data-film-name"));
       const year = String(posterDiv.attr("data-film-release-year"));
+      const slug = String(posterDiv.attr("data-film-slug"));
 
       let posterUrl = "";
       const imgElement = posterDiv.find("img");
@@ -218,6 +224,7 @@ export async function fetchLetterboxdReviewsByPage(
         id,
         name,
         year,
+        slug,
         posterUrl,
         rating,
         datetime,
@@ -345,4 +352,66 @@ export async function addTmdbPosterUrls(
       console.error(`Error fetching TMDB data for film: ${film.name}`, error);
     }
   }
+}
+
+export async function addLetterboxdSlug(
+  films: Array<Pick<Film, "name" | "year" | "slug">>,
+): Promise<void> {
+  for (const film of films) {
+    if (film.slug) {
+      // Slug already exists
+      continue;
+    }
+
+    const possibleSlugs = generatePossibleSlugs(film.name, film.year);
+
+    for (const slug of possibleSlugs) {
+      const url = `https://letterboxd.com/film/${slug}/`;
+      try {
+        const response = await fetch(url, { method: "HEAD" });
+
+        if (response.ok) {
+          // Found a valid slug
+          film.slug = slug;
+          break;
+        } else if (response.status === 404) {
+          // Slug does not exist
+          continue;
+        } else {
+          // Other HTTP error
+          console.error(`Error fetching URL ${url}: ${response.status} ${response.statusText}`);
+        }
+      } catch (error) {
+        console.error(`Error fetching URL ${url}:`, error);
+      }
+
+      await sleep(100);
+    }
+
+    if (!film.slug) {
+      console.warn(`Could not find slug for film: ${film.name} (${film.year})`);
+    }
+  }
+}
+
+function generatePossibleSlugs(name: string, year: string): string[] {
+  const baseSlug = slugify(name);
+  const yearSlug = year ? `${baseSlug}-${year}` : '';
+
+  const possibleSlugs: string[] = [];
+  if (yearSlug) {
+    possibleSlugs.push(yearSlug);
+  }
+
+  possibleSlugs.push(baseSlug);
+
+  return possibleSlugs;
+}
+
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/['’]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
 }
