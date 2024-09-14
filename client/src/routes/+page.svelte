@@ -115,13 +115,13 @@
 			<div class="w-full bg-[#1c2228] p-4 sm:p-8 rounded-lg shadow-lg">
 				<form on:submit|preventDefault={getRecommendations} class="space-y-6 sm:space-y-8">
 					<div
-						class="text-lg sm:text-xl text-gray-300 leading-relaxed flex flex-col items-center space-y-4"
+						class="text-lg sm:text-xl text-gray-300 leading-relaxed flex flex-col items-center justify-center space-y-4"
 					>
 						<span class="text-center">I want movie recommendations for</span>
 						<input
 							type="text"
 							bind:value={username}
-							class="inline-input w-full max-w-xs"
+							class="text-center inline-input w-full max-w-xs"
 							required
 							placeholder="(some Letterboxd username)"
 							style="--accent-color: {accentColor};"
@@ -189,7 +189,7 @@
 
 		{#if recommendations.length}
 			<div
-				class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6 mt-8 sm:mt-12"
+				class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6 mt-8 sm:mt-12"
 			>
 				{#each recommendations as movie}
 					<div class="movie-card group" style="--accent-color: {accentColor};">
