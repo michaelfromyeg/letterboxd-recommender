@@ -15,9 +15,22 @@ export async function getHtmlContent(
   target?: string,
 ): Promise<string> {
   const page = await browser.newPage();
+  
+  await page.setUserAgent('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36');
+  await page.setViewport({ width: 1280, height: 800 });
+
+  await page.setRequestInterception(true);
+  page.on('request', (req) => {
+    const resourceType = req.resourceType();
+    if (resourceType === 'image' || resourceType === 'media' || resourceType === 'font') {
+      req.abort();
+    } else {
+      req.continue();
+    }
+  });
 
   try {
-    await page.goto(url, { waitUntil: ["load", "networkidle0"], timeout: 30_000 });
+    await page.goto(url, { waitUntil: ["load", "networkidle2"], timeout: 10_000 });
 
     // await autoScroll(page);
 

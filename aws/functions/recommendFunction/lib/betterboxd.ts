@@ -11,7 +11,7 @@ import {
 
 export async function fetchLetterboxdFilms(
   username: string,
-  maxPages: number = 1,
+  maxPages: number = 5,
 ): Promise<{ films: Film[]; totalPages: number; fetchedPages: number }> {
   return await fetchLetterboxdData(
     username,
@@ -61,7 +61,7 @@ export async function fetchLetterboxdFilmsByPage(
 
 export async function fetchLetterboxdDiary(
   username: string,
-  maxPages: number = 1,
+  maxPages: number = 3,
 ): Promise<{ films: Film[]; totalPages: number; fetchedPages: number }> {
   return await fetchLetterboxdData(
     username,
@@ -144,7 +144,7 @@ export async function fetchLetterboxdDiaryEntriesByPage(
 
 export async function fetchLetterboxdReviews(
   username: string,
-  maxPages: number = 1,
+  maxPages: number = 6,
 ): Promise<{ films: Film[]; totalPages: number; fetchedPages: number }> {
   return await fetchLetterboxdData(
     username,
@@ -251,25 +251,24 @@ async function fetchLetterboxdData(
     username: string,
     page: number,
   ) => Promise<{ films: Film[]; totalPages: number }>,
-  maxPages: number = 1,
+  maxPages: number,
 ): Promise<{ films: Film[]; totalPages: number; fetchedPages: number }> {
   const { films: firstFilms, totalPages } = await pageFetcher(username, 1);
 
-  let films = [...firstFilms];
-  let fetchedPages = 1;
-  while (fetchedPages < Math.min(totalPages, maxPages)) {
-    const { films: fetchedFilms } = await pageFetcher(
-      username,
-      fetchedPages + 1,
-    );
-    films = [...films, ...fetchedFilms];
-    fetchedPages++;
-    await sleep(0);
+  const pagesToFetch = Math.min(totalPages, maxPages);
+  const pagePromises = [];
+
+  for (let i = 2; i <= pagesToFetch; i++) {
+    pagePromises.push(pageFetcher(username, i));
   }
 
-  const result = { films, totalPages, fetchedPages };
+  const fetchedPages = await Promise.all(pagePromises);
 
-  return result;
+  const films = [
+    ...firstFilms, 
+    ...fetchedPages.flatMap(({ films: fetchedFilms }) => fetchedFilms)
+  ];
+  return { films, totalPages, fetchedPages: pagesToFetch };
 }
 
 /**
