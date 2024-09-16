@@ -2,7 +2,7 @@ import chromium from '@sparticuz/chromium';
 import puppeteer from 'puppeteer-core';
 
 const settings = {
-  args: chromium.args,
+  args: [...chromium.args, '--disable-web-security', '--disable-gpu', '--no-sandbox'],
   defaultViewport: chromium.defaultViewport,
   executablePath: await chromium.executablePath(),
   headless: chromium.headless,
@@ -17,12 +17,12 @@ export async function getHtmlContent(
   const page = await browser.newPage();
   
   await page.setUserAgent('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36');
-  await page.setViewport({ width: 1280, height: 800 });
+  await page.setViewport({ width: 800, height: 600 });
 
   await page.setRequestInterception(true);
   page.on('request', (req) => {
     const resourceType = req.resourceType();
-    if (resourceType === 'image' || resourceType === 'media' || resourceType === 'font') {
+    if (['image', 'media', 'font', 'stylesheet'].includes(resourceType)) {
       req.abort();
     } else {
       req.continue();
@@ -30,7 +30,7 @@ export async function getHtmlContent(
   });
 
   try {
-    await page.goto(url, { waitUntil: ["load", "networkidle2"], timeout: 10_000 });
+    await page.goto(url, { waitUntil: ["load"], timeout: 30_000 });
 
     // await autoScroll(page);
 

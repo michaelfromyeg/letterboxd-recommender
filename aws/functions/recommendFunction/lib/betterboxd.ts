@@ -310,87 +310,86 @@ export async function addTmdbPosterUrls(
   const TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/";
   const POSTER_SIZE = "w500";
 
-  for (const film of films) {
-    try {
-      const searchUrl = `${TMDB_API_BASE_URL}/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(
-        film.name,
-      )}&year=${encodeURIComponent(film.year)}`;
-      const response = await fetch(searchUrl);
+  await Promise.all(
+    films.map(async (film) => {
+      try {
+        const searchUrl = `${TMDB_API_BASE_URL}/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(
+          film.name,
+        )}&year=${encodeURIComponent(film.year)}`;
+        const response = await fetch(searchUrl);
 
-      if (!response.ok) {
-        console.error(
-          `Failed to fetch TMDB data for film: ${film.name} (status ${response.status})`,
-        );
-        continue;
-      }
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const data: any = await response.json();
-      if (data.results && data.results.length > 0) {
-        // Attempt to find an exact match
-        const exactMatch = data.results.find(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (m: any) =>
-            m.title.toLowerCase() === film.name.toLowerCase() &&
-            m.release_date &&
-            m.release_date.startsWith(film.year),
-        );
-
-        const movie = exactMatch || data.results[0];
-        const posterPath = movie.poster_path;
-
-        if (posterPath) {
-          film.tmdbPosterUrl = `${TMDB_IMAGE_BASE_URL}${POSTER_SIZE}${posterPath}`;
-        } else {
-          console.warn(`No poster path found for film: ${film.name}`);
+        if (!response.ok) {
+          console.error(
+            `Failed to fetch TMDB data for film: ${film.name} (status ${response.status})`,
+          );
+          return;
         }
-      } else {
-        console.warn(`No results found for film: ${film.name}`);
+
+        const data: any = await response.json();
+        if (data.results && data.results.length > 0) {
+          const exactMatch = data.results.find(
+            (m: any) =>
+              m.title.toLowerCase() === film.name.toLowerCase() &&
+              m.release_date &&
+              m.release_date.startsWith(film.year),
+          );
+
+          const movie = exactMatch || data.results[0];
+          const posterPath = movie.poster_path;
+
+          if (posterPath) {
+            film.tmdbPosterUrl = `${TMDB_IMAGE_BASE_URL}${POSTER_SIZE}${posterPath}`;
+          } else {
+            console.warn(`No poster path found for film: ${film.name}`);
+          }
+        } else {
+          console.warn(`No results found for film: ${film.name}`);
+        }
+      } catch (error) {
+        console.error(`Error fetching TMDB data for film: ${film.name}`, error);
       }
-    } catch (error) {
-      console.error(`Error fetching TMDB data for film: ${film.name}`, error);
-    }
-  }
+    }),
+  );
 }
 
 export async function addLetterboxdSlug(
   films: Array<Pick<Film, "name" | "year" | "slug">>,
 ): Promise<void> {
-  for (const film of films) {
-    if (film.slug) {
-      // Slug already exists
-      continue;
-    }
-
-    const possibleSlugs = generatePossibleSlugs(film.name, film.year);
-
-    for (const slug of possibleSlugs) {
-      const url = `https://letterboxd.com/film/${slug}/`;
-      try {
-        const response = await fetch(url, { method: "HEAD" });
-
-        if (response.ok) {
-          // Found a valid slug
-          film.slug = slug;
-          break;
-        } else if (response.status === 404) {
-          // Slug does not exist
-          continue;
-        } else {
-          // Other HTTP error
-          console.error(`Error fetching URL ${url}: ${response.status} ${response.statusText}`);
-        }
-      } catch (error) {
-        console.error(`Error fetching URL ${url}:`, error);
+  await Promise.all(
+    films.map(async (film) => {
+      if (film.slug) {
+        // Slug already exists
+        return;
       }
 
-      await sleep(100);
-    }
+      const possibleSlugs = generatePossibleSlugs(film.name, film.year);
 
-    if (!film.slug) {
-      console.warn(`Could not find slug for film: ${film.name} (${film.year})`);
-    }
-  }
+      for (const slug of possibleSlugs) {
+        const url = `https://letterboxd.com/film/${slug}/`;
+        try {
+          const response = await fetch(url, { method: "HEAD" });
+
+          if (response.ok) {
+            // Found a valid slug
+            film.slug = slug;
+            break;
+          } else if (response.status === 404) {
+            // Slug does not exist
+            continue;
+          } else {
+            // Other HTTP error
+            console.error(`Error fetching URL ${url}: ${response.status} ${response.statusText}`);
+          }
+        } catch (error) {
+          console.error(`Error fetching URL ${url}:`, error);
+        }
+      }
+
+      if (!film.slug) {
+        console.warn(`Could not find slug for film: ${film.name} (${film.year})`);
+      }
+    }),
+  );
 }
 
 function generatePossibleSlugs(name: string, year: string): string[] {

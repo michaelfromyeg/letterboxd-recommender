@@ -11,6 +11,9 @@ build:
 invoke:
 	sam local invoke --event event.json --env-vars env.json
 
+invoke-long:
+	sam local invoke --event event-long.json --env-vars env.json
+
 deploy:
 	@echo OPEN_API_KEY=$(OPEN_API_KEY)
 	@echo TMDB_API_KEY=$(TMDB_API_KEY)
